@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script  src="vue.js"></script>
+    <style>
+        [v-cloak] {
+            display: none;
+        }
+
+        *{
+            margin:0;
+            padding:0;
+        }
+
+        body{
+            font:15px/1.3 'Open Sans', sans-serif;
+            color: #5e5b64;
+            text-align:center;
+        }
+
+        a, a:visited {
+            outline:none;
+            color: #172b32;
+        }
+
+        a:hover{
+            text-decoration:none;
+        }
+
+        section, footer, header, aside, nav{
+            display: block;
+        }
+
+        .bar{
+            background-color:#5c9bb7;
+
+            background-image:-webkit-linear-gradient(top, #5c9bb7, #5392ad);
+            background-image:-moz-linear-gradient(top, #5c9bb7, #5392ad);
+            background-image:linear-gradient(top, #5c9bb7, #5392ad);
+
+            box-shadow: 0 1px 1px #ccc;
+            border-radius: 2px;
+            width: 580px;
+            padding: 10px;
+            margin: 45px auto 25px;
+            position:relative;
+            text-align:right;
+            line-height: 1;
+        }
+
+        .bar a{
+            background:#4987a1 center center no-repeat;
+            width:32px;
+            height:32px;
+            display:inline-block;
+            text-decoration:none !important;
+            margin-right:5px;
+            border-radius:2px;
+            cursor:pointer;
+        }
+
+        .bar a.active{
+            background-color:#c14694;
+        }
+
+        .bar input{
+            background:#fff no-repeat 13px 13px;
+
+            border: none;
+            width: 100%;
+            line-height: 19px;
+            padding: 11px 0;
+
+            border-radius: 2px;
+            box-shadow: 0 2px 8px #c4c4c4 inset;
+            text-align: left;
+            font-size: 14px;
+            font-family: inherit;
+            color: #738289;
+            font-weight: bold;
+            outline: none;
+            text-indent: 40px;
+        }
+        #introduction{
+            border: 5px solid gray;
+            margin: 20px;
+            padding: 100px;
+        }
+        #download{
+            border: 5px solid white;
+            margin: 20px;
+            padding: 50px;
+        }
+        #tutorial{
+            margin: 20px;
+            padding: 50px;
+        }
+    </style>
+</head>
+<body>
+<div id="introduction">
+    <h1>{{project_title}}</h1>
+    <p>{{introduction}}</p>
+    <img src="pipeline.jpg" width="372px" height="360px">
+    <p v-html="update"></p>
+    <img src="V_i.svg">
+    <p>Where</p>
+    <img src="Psi.svg">
+</div>
+<div id="download">
+    <a href="https://github.com/az123zx123/large_scale_neurons_simulation">Python version</a>
+    <br/>
+    <a href="https://github.com/az123zx123/large_scale_neurons_simulation_MATLAB">MATLAB version</a>
+</div>
+<form id="tutorial">
+<div class="bar">
+    <a v-bind:class="{ 'active': layout == 'python'}" v-on:click="layout = 'python'"><img src="rsz_python_icon.png"></a>
+    <a v-bind:class="{ 'active': layout == 'matlab'}" v-on:click="layout = 'matlab'"><img src="rsz_matlab_logo.png"></a>
+</div>
+    <div v-if="layout == 'python'" class="python_intro">
+        <img src="python_GUI.png" width=50% height=50%>
+
+        <div v-html="python_introduction"></div>
+    </div>
+    <div v-if="layout == 'matlab'" class="matlab_intro">
+        <img src="matlab_GUI.jpg" width=50% height=50%>
+
+        <div v-html="matlab_introduction"></div>
+    </div>
+    <h2>Dataset Input and Storage</h2>
+    <div v-html="common_tutorial"></div>
+    <img src="connectome.jpg">
+</form>
+<form id="demo">
+<h2>Some demonstration</h2>
+    <h4>connectome in matrix form</h4>
+    <img src="demo1.png" width="60%" height="60%">
+    <br />
+    <a href="https://doi.org/10.7554/eLife.26975.001">A Connectome of a Learning and Memory Center in the Adult Drosophila Brain, 2017
+    </a>
+    <br />
+    <h4>simulation based on inversed connectome</h4>
+    <img src="demo5.gif">
+    <img src="raster.png">
+</form>
+<script type="text/javascript">
+var intro = new Vue({
+    el:"#introduction",
+    data:{project_title:"large scale neurons simulation",
+    introduction:"This tool can simulate and visualize the behavior of a large scale neural network. " +
+        "Users can input their own connectome and define neuron types. " +
+        "This tool has MATLAB version and Python version. " +
+        "Both version can do simulation and visualization seperately. " +
+        "MATLAB version is designed for small size connectome and Python",
+    update:"The connectome is in matrix form. Instead of directly using connectome, we use the masked inverted form Q <br />" +
+        "V is the membrane voltage and b is the external input current",
+    invert:""}
+})
+var download = new Vue({el:"#download",
+data:{python_download:"python version download",
+    matlab_download:"matlab version download"
+}
+})
+var tuto = new Vue({
+    el:"#tutorial",
+    data:{
+        layout:"python",
+        python_introduction:"Ncluster: neurons per cluster. Ncluster * Npc should be the number of neurons. <br />" +
+            "Npc: neurons per chip. Large number will result a dense matrix, which may needs more computation.<br />" +
+            "Connectivity: the density of interchip connectome. <br />" +
+            "topology: 1D only connected between two chips; 2D means globally connected with nearby chips. <br />" +
+            "Process: do invert for connectome <br />" +
+            "Run: do simulation",
+        matlab_introduction:"User should input their own connectome by directly changing the MATLAB code. <br />" +
+            "The MATLAB version is suitable for small size dataset. <br />" +
+            "Python version is better if you want more features or you have a larger scale dataset.",
+        common_tutorial:"All the relevant input files should be in CSV form. <br />Input Connectome Standard:<br />" +
+            "<b>Neuron File</b> <br />" +
+            "BodyID: a unique index for each neuron<br />" +
+            "Type: specified by users with provided modulation function<br />" +
+            "Location: A/P; V/D; M/L<br />" +
+            "<b>Connection File</b><br />" +
+            "Presynaptic_neuron<br />" +
+            "Postsynaptic_neuron<br />" +
+            "Weight<br />" +
+            "Sample data: <a href='https://www.janelia.org/project-team/flyem/hemibrain'>Hemibrain Adjacency Dataset</a> <br />"
+    }
+
+})
+</script>
+</body>
+</html>
